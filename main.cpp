@@ -1,105 +1,111 @@
 //#include "sequence_alignment_sequential.cpp"
 #include <string>
 #include <iostream>
-#include <fstream>
-#include <iostream>
 #include <vector>
 #include <algorithm>
-#include <string>
 
 using namespace std;
 
-// Function to calculate the T and prev values for a single row
-void calculateTandPrev(const string& A, int rowStart, vector<int>& T, vector<int>& prev) {
-    int n = A.size();
-    T[0] = 0;
-    prev[0] = 0;
+class SequenceAlignment_Sequential {
+public:
+    string seq1, seq2;
+    int match_score, mismatch_cost, gap_cost;
+    vector<vector<int>> dp;
+    string align1, align2;
 
-    for (int j = 1; j < n; j++) {
-        int score = max(T[j - 1] - 1, prev[j - 1] - 1);
-        T[j] = max(score, static_cast<int>(T[j - 1] + (A[rowStart + j] == A[j])));
-        prev[j] = max(T[j - 1], prev[j - 1]);
-    }
-}
+    SequenceAlignment_Sequential(const string& s1, const string& s2, int match, int mismatch, int gap)
+        : seq1(s1), seq2(s2), match_score(match), mismatch_cost(mismatch), gap_cost(gap) {}
 
-// Function to calculate the T^R and next values for a single row
-void calculateTRandNext(const string& A, int rowStart, vector<int>& TR, vector<int>& next) {
-    int n = A.size();
-    TR[n - 1] = 0;
-    next[n - 1] = 0;
-
-    for (int j = n - 2; j >= 0; j--) {
-        int score = max(TR[j + 1] - 1, next[j + 1] - 1);
-        TR[j] = max(score, static_cast<int>(TR[j + 1] + (A[rowStart + j] == A[j])));
-        next[j] = max(TR[j + 1], next[j + 1]);
-    }
-}
-
-// Function to compute the opt values for a single row
-void computeOptValues(const vector<int>& T, const vector<int>& TR, vector<int>& opt) {
-    int n = T.size();
-    for (int j = 0; j < n; j++) {
-        opt[j] = T[j] + TR[j];
-    }
-}
-
-// DecomposeIteration function
-void DecomposeIteration(const string& A, int rowUp, int rowDown, vector<int>& opt, int& rMid, int& pMid) {
-    int rowMid = (rowUp + rowDown) / 2;
-
-    vector<int> T(A.size(), 0);
-    vector<int> prev(A.size(), 0);
-    vector<int> TR(A.size(), 0);
-    vector<int> next(A.size(), 0);
-
-    // Initialize T values for rowUp
-    calculateTandPrev(A, rowUp, T, prev);
-
-    // Calculate T and prev values for rows rowUp + 1 through rowMid
-    for (int row = rowUp + 1; row <= rowMid; row++) {
-        calculateTandPrev(A, row, T, prev);
+    // Function to perform sequence alignment
+    void alignSequences() {
+        initializeDPTable();
+        fillDPTable();
+        traceback();
     }
 
-    // Initialize T values for rowDown
-    calculateTRandNext(A, rowDown, TR, next);
+private:
+    void initializeDPTable() {
+        int m = seq1.length();
+        int n = seq2.length();
+        dp = vector<vector<int>>(m + 1, vector<int>(n + 1, 0));
 
-    // Calculate T^R and next values for rows rowDown - 1 through rowMid
-    for (int row = rowDown - 1; row >= rowMid; row--) {
-        calculateTRandNext(A, row, TR, next);
+        for (int i = 0; i <= m; ++i) {
+            dp[i][0] = i * gap_cost;
+        }
+        for (int j = 0; j <= n; ++j) {
+            dp[0][j] = j * gap_cost;
+        }
+    }
+    
+    void fillDPTable() {
+        int m = seq1.length();
+        int n = seq2.length();
+        for (int i = 1; i <= m; ++i) {
+            for (int j = 1; j <= n; ++j) {
+                int match = dp[i - 1][j - 1] + (seq1[i - 1] == seq2[j - 1] ? match_score : mismatch_cost);
+                int delete_op = dp[i - 1][j] + gap_cost;
+                int insert_op = dp[i][j - 1] + gap_cost;
+                dp[i][j] = max({match, delete_op, insert_op});
+            }
+        }
     }
 
-    // Compute opt values for rowMid
-    computeOptValues(T, TR, opt);
+    void traceback() {
+        int i = seq1.length();
+        int j = seq2.length();
+        align1 = "";
+        align2 = "";
+        
+        while (i > 0 && j > 0) {
+            int score_current = dp[i][j];
+            int score_diagonal = dp[i - 1][j - 1];
+            int score_up = dp[i][j - 1];
+            int score_left = dp[i - 1][j];
 
-    // Find the leftmost maximal value of opt
-    int maxVal = *max_element(opt.begin(), opt.end());
-    auto it = find(opt.begin(), opt.end(), maxVal);
-    rMid = it - opt.begin();
-    pMid = 0; // Single processor case
+            if (score_current == score_diagonal + (seq1[i - 1] == seq2[j - 1] ? match_score : mismatch_cost)) {
+                align1 += seq1[i - 1];
+                align2 += seq2[j - 1];
+                --i;
+                --j;
+            } else if (score_current == score_left + gap_cost) {
+                align1 += seq1[i - 1];
+                align2 += '-';
+                --i;
+            } else if (score_current == score_up + gap_cost) {
+                align1 += '-';
+                align2 += seq2[j - 1];
+                --j;
+            }
+        }
 
-    // Recursively call DecomposeIteration on the row boundaries
-    if (rowMid > rowUp) {
-        DecomposeIteration(A, rowUp, rowMid, opt, rMid, pMid);
+        while (i > 0) {
+            align1 += seq1[i - 1];
+            align2 += '-';
+            --i;
+        }
+        while (j > 0) {
+            align1 += '-';
+            align2 += seq2[j - 1];
+            --j;
+        }
+        reverse(align1.begin(), align1.end());
+        reverse(align2.begin(), align2.end());
     }
-    if (rowMid < rowDown) {
-        DecomposeIteration(A, rowMid + 1, rowDown, opt, rMid, pMid);
-    }
-}
+};
 
+// Main function to demonstrate the class usage
 int main() {
-    string A = "ACGTACGT";
-    int rowUp = 0;
-    int rowDown = A.size() - 1;
-    vector<int> opt(A.size(), 0);
-    int rMid, pMid;
+    string seq1 = "GACTTAC";
+    string seq2 = "CGTGAATTCAT";
+    int match_score = 5;
+    int mismatch_cost = -3;
+    int gap_cost = -4;
 
-    DecomposeIteration(A, rowUp, rowDown, opt, rMid, pMid);
+    SequenceAlignment_Sequential aligner(seq1, seq2, match_score, mismatch_cost, gap_cost);
+    aligner.alignSequences();
 
-    cout << "Optimal alignment scores: ";
-    for (int val : opt) {
-        cout << val << " ";
-    }
-    cout << endl;
+    cout << "Alignment 1: " << aligner.align1 << endl;
+    cout << "Alignment 2: " << aligner.align2 << endl;
 
     return 0;
 }
