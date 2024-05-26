@@ -93,10 +93,9 @@ private:
     }
 };
 
-// Main function to demonstrate the class usage
 int main() {
-    string seq1 = "GACTTAC";
-    string seq2 = "CGTGAATTCAT";
+    string seq1 = "CGTGAATTCAT";
+    string seq2 = "GACTTAC";
     int match_score = 5;
     int mismatch_cost = -3;
     int gap_cost = -4;
@@ -108,4 +107,8 @@ int main() {
     cout << "Alignment 2: " << aligner.align2 << endl;
 
     return 0;
+    
+    //char *expected_alignA = "GACTT-A";
+    //char *expected_alignB = "GAATTCA";
+
 }
