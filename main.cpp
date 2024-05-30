@@ -1,4 +1,4 @@
-#include "sequence_alignment_sequential.cpp"
+#include "sequence_alignment_sequential.h"
 #include <string>
 #include <iostream>
 #include <vector>
