@@ -3,6 +3,8 @@
 #include <vector>
 #include <algorithm>
 #include "sequence_alignment_sequential.h"
+#include "sequence_alignment.hpp"
+#include "test.h"
 using namespace std;
 
 void test1(){
@@ -44,14 +46,40 @@ void test2(){
     cout << "Alignment 2: " << aligner.align2 << endl;
 
 
-    if (aligner.align1=="---GACTT-AC"&& aligner.align2=="CGTGAATTCAT"  ){
+    if (aligner.align1=="---GACTT-AC"&& aligner.align2=="CGTGAATTCAT"){
         printf("TEST2 PASSED\n");
     }
     else{
         printf("TEST2 FAILED\n");
-
     }
-
 }
 
+void test3(){
+    char* sequence_A = "GACTTAC";
+    char* sequence_B = "CGTGAATTCAT";
+    int n = strlen(sequence_A);
+    int m = strlen(sequence_B);
+    int gap_penalty = 4;
+    int match_score = 5;
+    int mismatch_score = -3;
+    unsigned int num_threads = 1, block_size_x = 1, block_size_y = 1;
+    ProbType at = ProbType::LOCAL_ALIGNMENT;  
 
+    SequenceAlignment aligner(sequence_A, sequence_B, n, m, 
+        num_threads, block_size_x, block_size_y, 
+        gap_penalty, match_score, mismatch_score, at
+    );
+
+    aligner.alignment();
+    printf("Testing parallel\n");
+    std::string seq1(aligner.align1);
+    std::string seq2(aligner.align2);
+
+    if (seq1=="---GACTT-AC" && seq2=="CGTGAATTCAT"){
+        printf("TEST2 PASSED\n");
+    }
+    else{
+        printf("TEST2 FAILED\n");
+        printf("seq1=%s, seq2=%s",aligner.align1,aligner.align2);
+    }
+}

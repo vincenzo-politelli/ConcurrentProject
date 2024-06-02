@@ -1,4 +1,10 @@
 #include "sequence_alignment.hpp"
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+using namespace std;
+
 
 SequenceAlignment::SequenceAlignment(
     char *seq_1, char *seq_2, 
@@ -227,8 +233,8 @@ void SequenceAlignment::traceback(unsigned int i, unsigned int j){
         len_align1++;
         len_align2++;
     }
-    reverse(align1, len_align1);
-    reverse(align2, len_align2);
+    std::reverse(align1, align1+len_align1);
+    std::reverse(align2, align2+len_align2);
 }
 
 void SequenceAlignment::alignment() {
@@ -242,4 +248,6 @@ void SequenceAlignment::alignment() {
     }
     traceback(align1_start, align2_start);
 }
+
+
 

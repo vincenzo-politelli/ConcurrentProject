@@ -3,8 +3,8 @@
 #include <condition_variable>
 #include <thread>
 #include <atomic>
+#pragma once
 
-#include "utils.cpp"
 
 enum Direction {
     MATCH,
@@ -21,6 +21,22 @@ enum ProbType {
 struct Block {
     unsigned int start_x, start_y;
 };
+
+inline int max_vector(std::vector<int> ints) {
+    if (ints.size() == 0) {
+        return std::numeric_limits<int>::min();
+    }
+
+    int max = ints[0];
+    for (auto it = ints.begin(); it != ints.end(); ++it) {
+        if (*it > max) {
+            max = *it;
+        }
+    }
+
+    return max;
+}
+
 
 class SequenceAlignment {
 public:
@@ -74,18 +90,3 @@ public:
     void alignment();
 };
 
-
-int max_vector(std::vector<int> ints) {
-    if (ints.size() == 0) {
-        return std::numeric_limits<int>::min();
-    }
-
-    int max = ints[0];
-    for (auto it = ints.begin(); it != ints.end(); ++it) {
-        if (*it > max) {
-            max = *it;
-        }
-    }
-
-    return max;
-}
