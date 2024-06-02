@@ -229,12 +229,12 @@ void SequenceAlignment::traceback(unsigned int i, unsigned int j){
         } else {
             break;
         }
-
         len_align1++;
         len_align2++;
     }
-    std::reverse(align1, align1+len_align1);
-    std::reverse(align2, align2+len_align2);
+
+    //std::reverse(align1, align1+len_align1);
+    //std::reverse(align2, align2+len_align2);
 }
 
 void SequenceAlignment::alignment() {

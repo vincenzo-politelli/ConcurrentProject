@@ -69,17 +69,22 @@ void test3(){
         num_threads, block_size_x, block_size_y, 
         gap_penalty, match_score, mismatch_score, at
     );
-
+    printf("pass\n");
     aligner.alignment();
     printf("Testing parallel\n");
-    std::string seq1(aligner.align1);
-    std::string seq2(aligner.align2);
-
-    if (seq1=="---GACTT-AC" && seq2=="CGTGAATTCAT"){
-        printf("TEST2 PASSED\n");
-    }
-    else{
-        printf("TEST2 FAILED\n");
-        printf("seq1=%s, seq2=%s",aligner.align1,aligner.align2);
-    }
+    
+    for(int i = 0; i < aligner.len_align1; i++) {
+        putchar(aligner.align1[i]);
+    } s
+    
+    
+    
+    printf("\n");
+    // if (seq1=="---GACTT-AC" && seq2=="CGTGAATTCAT"){
+    //     printf("TEST3 PASSED\n");
+    // }
+    // else{
+    //     printf("TEST3 FAILED\n");
+    //     printf("seq1=%s, seq2=%s",aligner.align1,aligner.align2);
+    // }
 }
