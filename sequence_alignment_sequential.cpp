@@ -32,7 +32,7 @@ void SequenceAlignment_Sequential::fillDPTable(){
 }
 
 void SequenceAlignment_Sequential::traceback(){
-            int i = seq1.length();
+        int i = seq1.length();
         int j = seq2.length();
         align1 = "";
         align2 = "";

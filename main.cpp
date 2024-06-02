@@ -8,6 +8,7 @@
 using namespace std;
 
 int main() {
+    printf("Testing sequential algorithm\n");
     test1();
     test2();
     return 0;
