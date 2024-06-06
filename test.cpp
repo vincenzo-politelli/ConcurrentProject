@@ -75,7 +75,7 @@ void test3(){
     
     for(int i = 0; i < aligner.len_align1; i++) {
         putchar(aligner.align1[i]);
-    } s
+    } 
     
     
     
