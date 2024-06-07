@@ -7,19 +7,34 @@
 using namespace std;
 #pragma once
 
+
 class SequenceAlignment_Parallel {
 public:
+
     string seq1, seq2;
-    int match_score, mismatch_cost, gap_cost;
+    int gap_cost, match_score, mismatch_cost;
     vector<vector<int>> dp;
     string align1, align2;
-    mutex lock;
+    mutex mtx;
+    condition_variable cv;
+    vector<vector<bool>> block_done;
 
+    int block_size_x = 1;  
+    int block_size_y = 1; 
 
-    int max_score; //local alignement
-    int max_i; //local alignement
-    int max_j; //local alignement
+    SequenceAlignment_Parallel(const string& s1, const string& s2, int gap, int match, int mismatch)
+        : seq1(s1), seq2(s2), gap_cost(gap), match_score(match), mismatch_cost(mismatch) {}
 
+    void initializeDPTable();
+    void fillDPTable();
+    void traceback();
+    bool isBlockReady(int block_x, int block_y);
+    void fillDPBlock(int startRow, int endRow, int startCol, int endCol, int block_x, int block_y);
 
-
+    void alignSequences() {
+        initializeDPTable();
+        fillDPTable();
+        traceback();
+    }
+    
 };
