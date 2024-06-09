@@ -29,6 +29,13 @@ void SequenceAlignment_Sequential::fillDPTable(){
                 dp[i][j] = max({match, delete_op, insert_op});
             }
         }
+    // cout << "Completed DP Table:" << endl;
+    // for (const auto& row : dp) {
+    //     for (int val : row) {
+    //         cout << val << " ";
+    //     }
+    //     cout << endl;
+    // }
 }
 
 void SequenceAlignment_Sequential::traceback(){
