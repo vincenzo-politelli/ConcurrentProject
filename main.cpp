@@ -1,5 +1,5 @@
 #include "sequence_alignment_sequential.h"
-#include "sequence_alignment.hpp"
+//#include "sequence_alignment.hpp"
 #include <string>
 #include <iostream>
 #include <vector>

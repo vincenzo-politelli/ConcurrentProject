@@ -1,7 +1,7 @@
 CXX = g++
 CFLAGS = -pthread -std=c++17 -Wall
 
-SOURCES = main.cpp sequence_alignment_sequential.cpp sequence_alignment.cpp  test.cpp sequence_alignment_parallel.cpp
+SOURCES = main.cpp sequence_alignment_sequential.cpp  test.cpp sequence_alignment_parallel.cpp  #sequence_alignment.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 # The default target
