@@ -74,6 +74,7 @@ void SequenceAlignment_Parallel::fillDPTable() {
             });
         }
     }
+    printf("Threads created: %lu\n ",threads.size());
 
     for (int i = 0; i<threads.size() ; i++) {
         threads[i].join();
@@ -127,10 +128,8 @@ void SequenceAlignment_Parallel::traceback() {
         align2 += seq2[j - 1];
         --j;
     }
-
     std::reverse(this->align1.begin(), this->align1.end());
     std::reverse(this->align2.begin(), this->align2.end());
-
 }
 
 
