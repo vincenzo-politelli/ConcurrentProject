@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#include <fstream>
 #include <chrono>
 #include "sequence_alignment_sequential.h"
 #include "sequence_alignment_parallel.h"
@@ -171,6 +172,56 @@ void test5(){
              << "Parallel time: " << parallelTime << " ms., "
              << "Parallel time with 1 thread: " << parallelTime_1thread << "ms." << endl;
     }   
+}
+
+void write() {
+    ofstream resultFile("results.csv");
+    resultFile << "SequenceLength,SequentialTime(ms),ParallelTime(ms),NumThreads" << endl;
+    int nb_threads = 11;
+
+    vector<int> sequenceLengths;
+    for (int j = 10; j<1000;j++){
+        sequenceLengths.push_back(j);
+    }
+    int match_score = 5;
+    int mismatch_cost = -3;
+    int gap_cost = -4;
+
+    random_device rd;
+    mt19937 gen(rd());
+    
+    for(int length : sequenceLengths){
+
+        string seq1 = generateRandomSequence(length);
+        string seq2 = generateRandomSequence(length);
+
+        SequenceAlignment_Sequential sequentialAligner(seq1, seq2, match_score, mismatch_cost, gap_cost);
+        auto startSeq = chrono::high_resolution_clock::now();
+        sequentialAligner.alignSequences();
+        auto endSeq = chrono::high_resolution_clock::now();
+        auto sequentialTime = chrono::duration_cast<chrono::milliseconds>(endSeq - startSeq).count();
+       
+        for(int i=2;i<nb_threads;i++){
+            SequenceAlignment_Parallel parallelAligner(seq1, seq2, match_score, mismatch_cost, gap_cost);
+            int num_blocks_x = std::sqrt(i);
+            int num_blocks_y = std::ceil(static_cast<double>(i) / num_blocks_x);
+            parallelAligner.block_size_x = (length + num_blocks_x - 1) / num_blocks_x;
+            parallelAligner.block_size_y = (length + num_blocks_y - 1) / num_blocks_y;
+            
+            auto startPar = chrono::high_resolution_clock::now();
+            parallelAligner.alignSequences();
+            auto endPar = chrono::high_resolution_clock::now();
+            auto parallelTime = chrono::duration_cast<chrono::milliseconds>(endPar - startPar).count();
+            
+            resultFile << length << "," << sequentialTime << "," << parallelTime << "," << parallelAligner.nb_threads << endl;
+
+        }
+
+
+    }
+
+
+    resultFile.close();
 }
 
 

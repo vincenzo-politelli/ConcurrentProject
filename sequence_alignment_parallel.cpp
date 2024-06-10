@@ -76,6 +76,7 @@ void SequenceAlignment_Parallel::fillDPTable() {
         }
     }
     printf("Threads created: %lu\n ",threads.size());
+    nb_threads = threads.size();
 
     for (int i = 0; i<threads.size() ; i++) {
         threads[i].join();

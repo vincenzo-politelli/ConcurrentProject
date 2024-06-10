@@ -19,6 +19,7 @@ public:
     condition_variable cv;
     vector<vector<bool>> block_done;
 
+    unsigned long nb_threads;
     int block_size_x = 1;  
     int block_size_y = 1; 
 

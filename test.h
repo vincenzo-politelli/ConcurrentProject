@@ -6,3 +6,4 @@ void test3();
 void test4();
 string generateRandomSequence(int lenght);
 void test5();
+void write();
