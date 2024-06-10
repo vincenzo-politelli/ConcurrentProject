@@ -19,8 +19,8 @@ public:
     condition_variable cv;
     vector<vector<bool>> block_done;
 
-    int block_size_x = 10;  
-    int block_size_y = 2; 
+    int block_size_x = 1;  
+    int block_size_y = 1; 
 
     SequenceAlignment_Parallel(const string& s1, const string& s2, int match, int mismatch, int gap)
         : seq1(s1), seq2(s2), gap_cost(gap), match_score(match), mismatch_cost(mismatch) {}

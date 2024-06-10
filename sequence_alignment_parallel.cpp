@@ -30,7 +30,7 @@ void SequenceAlignment_Parallel::fillDPBlock(int startRow, int endRow, int start
         }
     }
 
-    unique_lock<mutex> lock(mtx);
+    unique_lock<mutex> lock(mtx); 
     block_done[block_x][block_y] = true;
     cv.notify_all();
 }
@@ -45,7 +45,7 @@ bool SequenceAlignment_Parallel::isBlockReady(int block_x, int block_y) {
 void SequenceAlignment_Parallel::processBlock(int startRow, int endRow, int startCol, int endCol, int block_x, int block_y) {
     unique_lock<mutex> lock(mtx);
     while (!isBlockReady(block_x, block_y)) {
-        cv.wait(lock);
+        cv.wait(lock);    
     }
     fillDPBlock(startRow, endRow, startCol, endCol, block_x, block_y);
 }
@@ -72,6 +72,7 @@ void SequenceAlignment_Parallel::fillDPTable() {
                 }
                 fillDPBlock(startRow, endRow, startCol, endCol, block_x, block_y);
             });
+            //threads.push_back(thread(&SequenceAlignment_Parallel::processBlock, this,startRow, endRow, startCol, endCol, block_x, block_y));
         }
     }
     printf("Threads created: %lu\n ",threads.size());
@@ -79,6 +80,7 @@ void SequenceAlignment_Parallel::fillDPTable() {
     for (int i = 0; i<threads.size() ; i++) {
         threads[i].join();
     }
+    //printf("Pass\n");
 
     // Debugging: Print completed DP table
     // cout << "Completed DP Table:" << endl;

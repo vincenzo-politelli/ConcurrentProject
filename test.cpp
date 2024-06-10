@@ -116,7 +116,7 @@ string generateRandomSequence(int length) {
 
 void test5(){
     int numTests = 100;
-    int sequenceLength = 10000;
+    int sequenceLength = 1000;
 
     random_device rd;
     mt19937 gen(rd());
@@ -129,6 +129,16 @@ void test5(){
         int match_score = 5;
         int mismatch_cost = -3;
         int gap_cost = -4;
+
+        SequenceAlignment_Parallel pa(seq1, seq2, match_score, mismatch_cost, gap_cost);
+        pa.block_size_x = seq1.length();
+        pa.block_size_y = seq2.length();
+
+        auto s = chrono::high_resolution_clock::now();
+        pa.alignSequences();
+        auto e = chrono::high_resolution_clock::now();
+        auto parallelTime_1thread = chrono::duration_cast<chrono::milliseconds>(e- s).count();
+
 
         int block_size_x = dis_block(gen);
         int block_size_y = dis_block(gen);
@@ -158,7 +168,8 @@ void test5(){
         // Print results
         cout << "Test " << i + 1 << " passed. "
              << "Sequential time: " << sequentialTime << " ms, "
-             << "Parallel time: " << parallelTime << " ms." << endl;
+             << "Parallel time: " << parallelTime << " ms., "
+             << "Parallel time with 1 thread: " << parallelTime_1thread << "ms." << endl;
     }   
 }
 
