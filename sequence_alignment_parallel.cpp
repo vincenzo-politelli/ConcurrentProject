@@ -43,6 +43,7 @@ bool SequenceAlignment_Parallel::isBlockReady(int block_x, int block_y) {
 }
 
 void SequenceAlignment_Parallel::processBlock(int startRow, int endRow, int startCol, int endCol, int block_x, int block_y) {
+    //this functions is not used
     unique_lock<mutex> lock(mtx);
     while (!isBlockReady(block_x, block_y)) {
         cv.wait(lock);    
@@ -65,6 +66,7 @@ void SequenceAlignment_Parallel::fillDPTable() {
             int startCol = block_y * block_size_y + 1;
             int endCol = min((block_y + 1) * block_size_y, n);
 
+            //was inspired by Stack Exchange/internet for the following:
             threads.emplace_back([this, block_x, block_y, startRow, endRow, startCol, endCol]() {
                 {
                     unique_lock<mutex> lock(mtx);

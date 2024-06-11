@@ -5,11 +5,12 @@
 #include "sequence_alignment_sequential.h"
 using namespace std;
 
+
+//see https://fr.wikipedia.org/wiki/Algorithme_de_Needleman-Wunsch
 void SequenceAlignment_Sequential::initializeDPTable() {
         int m = seq1.length();
         int n = seq2.length();
         dp = vector<vector<int>>(m + 1, vector<int>(n + 1, 0));
-
         for (int i = 0; i <= m; ++i) {
             dp[i][0] = i * gap_cost;
         }
