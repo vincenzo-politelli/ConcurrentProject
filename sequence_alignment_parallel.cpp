@@ -66,7 +66,7 @@ void SequenceAlignment_Parallel::fillDPTable() {
             int startCol = block_y * block_size_y + 1;
             int endCol = min((block_y + 1) * block_size_y, n);
 
-            //was inspired by Stack Exchange/internet for the following:
+            //was inspired by Stack overflow/internet for the following (especially the use of emplace back):
             threads.emplace_back([this, block_x, block_y, startRow, endRow, startCol, endCol]() {
                 {
                     unique_lock<mutex> lock(mtx);
