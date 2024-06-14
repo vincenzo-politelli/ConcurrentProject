@@ -43,6 +43,7 @@ bool SequenceAlignment_Parallel::isBlockReady(int block_x, int block_y) {
 }
 
 void SequenceAlignment_Parallel::processBlock(int startRow, int endRow, int startCol, int endCol, int block_x, int block_y) {
+    //this functions is not used
     unique_lock<mutex> lock(mtx);
     while (!isBlockReady(block_x, block_y)) {
         cv.wait(lock);    
@@ -65,6 +66,7 @@ void SequenceAlignment_Parallel::fillDPTable() {
             int startCol = block_y * block_size_y + 1;
             int endCol = min((block_y + 1) * block_size_y, n);
 
+            //was inspired by Stack Exchange/internet for the following:
             threads.emplace_back([this, block_x, block_y, startRow, endRow, startCol, endCol]() {
                 {
                     unique_lock<mutex> lock(mtx);
@@ -94,11 +96,11 @@ void SequenceAlignment_Parallel::fillDPTable() {
 }
 
 void SequenceAlignment_Parallel::traceback() {
-    int i = seq1.length();
+   int i = seq1.length();
     int j = seq2.length();
     align1 = "";
     align2 = "";
-
+    
     while (i > 0 && j > 0) {
         int score_current = dp[i][j];
         int score_diagonal = dp[i - 1][j - 1];
@@ -106,33 +108,31 @@ void SequenceAlignment_Parallel::traceback() {
         int score_left = dp[i - 1][j];
 
         if (score_current == score_diagonal + (seq1[i - 1] == seq2[j - 1] ? match_score : mismatch_cost)) {
-            align1 += seq1[i - 1];
-            align2 += seq2[j - 1];
+            align1 = seq1[i - 1] + align1;
+            align2 = seq2[j - 1] + align2;
             --i;
             --j;
         } else if (score_current == score_left + gap_cost) {
-            align1 += seq1[i - 1];
-            align2 += '-';
+            align1 = seq1[i - 1] + align1;
+            align2 = '-' + align2;
             --i;
         } else if (score_current == score_up + gap_cost) {
-            align1 += '-';
-            align2 += seq2[j - 1];
+            align1 = '-' + align1;
+            align2 = seq2[j - 1] + align2;
             --j;
         }
     }
 
     while (i > 0) {
-        align1 += seq1[i - 1];
-        align2 += '-';
+        align1 = seq1[i - 1] + align1;
+        align2 = '-' + align2;
         --i;
     }
     while (j > 0) {
-        align1 += '-';
-        align2 += seq2[j - 1];
+        align1 = '-' + align1;
+        align2 = seq2[j - 1] + align2;
         --j;
     }
-    std::reverse(this->align1.begin(), this->align1.end());
-    std::reverse(this->align2.begin(), this->align2.end());
 }
 
 
