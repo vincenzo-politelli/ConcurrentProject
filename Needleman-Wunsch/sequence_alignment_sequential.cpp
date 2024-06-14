@@ -143,3 +143,4 @@ void SequenceAlignment_Sequential::traceback_local(){
     std::reverse(align1.begin(), align1.end());
     std::reverse(align2.begin(), align2.end());
 }
+
