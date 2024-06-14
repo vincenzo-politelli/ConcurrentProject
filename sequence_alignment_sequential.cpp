@@ -7,6 +7,8 @@ using namespace std;
 
 
 //see https://fr.wikipedia.org/wiki/Algorithme_de_Needleman-Wunsch
+//see https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm
+
 void SequenceAlignment_Sequential::initializeDPTable() {
         int m = seq1.length();
         int n = seq2.length();
@@ -40,47 +42,43 @@ void SequenceAlignment_Sequential::fillDPTable(){
 }
 
 void SequenceAlignment_Sequential::traceback(){
-        int i = seq1.length();
-        int j = seq2.length();
-        align1 = "";
-        align2 = "";
-        
-        while (i > 0 && j > 0) {
-            int score_current = dp[i][j];
-            int score_diagonal = dp[i - 1][j - 1];
-            int score_up = dp[i][j - 1];
-            int score_left = dp[i - 1][j];
+    int i = seq1.length();
+    int j = seq2.length();
+    align1 = "";
+    align2 = "";
+    
+    while (i > 0 && j > 0) {
+        int score_current = dp[i][j];
+        int score_diagonal = dp[i - 1][j - 1];
+        int score_up = dp[i][j - 1];
+        int score_left = dp[i - 1][j];
 
-            if (score_current == score_diagonal + (seq1[i - 1] == seq2[j - 1] ? match_score : mismatch_cost)) {
-                align1 += seq1[i - 1];
-                align2 += seq2[j - 1];
-                --i;
-                --j;
-            } else if (score_current == score_left + gap_cost) {
-                align1 += seq1[i - 1];
-                align2 += '-';
-                --i;
-            } else if (score_current == score_up + gap_cost) {
-                align1 += '-';
-                align2 += seq2[j - 1];
-                --j;
-            }
-        }
-
-        while (i > 0) {
-            align1 += seq1[i - 1];
-            align2 += '-';
+        if (score_current == score_diagonal + (seq1[i - 1] == seq2[j - 1] ? match_score : mismatch_cost)) {
+            align1 = seq1[i - 1] + align1;
+            align2 = seq2[j - 1] + align2;
             --i;
-        }
-        while (j > 0) {
-            align1 += '-';
-            align2 += seq2[j - 1];
+            --j;
+        } else if (score_current == score_left + gap_cost) {
+            align1 = seq1[i - 1] + align1;
+            align2 = '-' + align2;
+            --i;
+        } else if (score_current == score_up + gap_cost) {
+            align1 = '-' + align1;
+            align2 = seq2[j - 1] + align2;
             --j;
         }
+    }
 
-        std::reverse(this->align1.begin(), this->align1.end());
-        std::reverse(this->align2.begin(), this->align2.end());
-
+    while (i > 0) {
+        align1 = seq1[i - 1] + align1;
+        align2 = '-' + align2;
+        --i;
+    }
+    while (j > 0) {
+        align1 = '-' + align1;
+        align2 = seq2[j - 1] + align2;
+        --j;
+    }
 }
 
 
@@ -119,28 +117,26 @@ void SequenceAlignment_Sequential::traceback_local(){
     align1 = "";
     align2 = "";
 
-    while (i > 0 && j > 0 && dp[i][j] > 0) {
+   while (i > 0 && j > 0 && dp[i][j] > 0) {
         int score_current = dp[i][j];
         int score_diagonal = dp[i - 1][j - 1];
         int score_up = dp[i][j - 1];
         int score_left = dp[i - 1][j];
 
         if (score_current == score_diagonal + (seq1[i - 1] == seq2[j - 1] ? match_score : mismatch_cost)) {
-            align1 += seq1[i - 1];
-            align2 += seq2[j - 1];
+            align1 = seq1[i - 1] + align1;
+            align2 = seq2[j - 1] + align2;
             --i;
             --j;
         } else if (score_current == score_left + gap_cost) {
-            align1 += seq1[i - 1];
-            align2 += '-';
+            align1 = seq1[i - 1] + align1;
+            align2 = '-' + align2;
             --i;
         } else if (score_current == score_up + gap_cost) {
-            align1 += '-';
-            align2 += seq2[j - 1];
+            align1 = '-' + align1;
+            align2 = seq2[j - 1] + align2;
             --j;
         }
     }
 
-    std::reverse(align1.begin(), align1.end());
-    std::reverse(align2.begin(), align2.end());
 }
