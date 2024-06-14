@@ -140,3 +140,4 @@ void SequenceAlignment_Sequential::traceback_local(){
     }
 
 }
+
